@@ -39,7 +39,7 @@ Test results: `mvn test` ran **27 tests, 0 failures** against a real MySQL 8.0.4
 
 ## Online preview (GitHub Pages)
 
-A sample-data preview of the frontend (no backend; data resets on reload) is built by `.github/workflows/preview-pages.yml` on every push to `main` and published at https://chetan7354.github.io/ghar_setu/ once Pages is switched on: repo **Settings → Pages → Source: GitHub Actions**. Logins: buyer@demo.in, seller@demo.in, admin@demo.in, password `demo1234`.
+A sample-data preview of the frontend (no backend; data resets on reload) is built by `.github/workflows/preview-pages.yml` on every push to `main` and published at https://chetan7354.github.io/Ghar_setu/ once Pages is switched on: repo **Settings → Pages → Source: GitHub Actions**. Logins: buyer@demo.in, seller@demo.in, admin@demo.in, password `demo1234`.
 
 ## Run it on Windows (PowerShell)
 
