@@ -33,6 +33,7 @@ jobs:
       - run: npx vite build -c vite.preview.config.ts
         env:
           VITE_DEMO: '1'
+          VITE_ROUTER: hash
       - uses: actions/upload-pages-artifact@v3
         with:
           path: frontend/dist-preview

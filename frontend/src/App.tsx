@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect } from 'react'
-import { BrowserRouter, MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
+import { BrowserRouter, HashRouter, MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
 import { IS_DEMO } from './api/client'
 import { AuthProvider } from './auth/AuthContext'
 import { RequireAuth } from './auth/RequireAuth'
@@ -18,7 +18,8 @@ const SellerDashboard = lazy(() => import('./pages/SellerDashboard'))
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'))
 
 // The static preview runs inside a sandboxed frame that ignores URL changes, so it keeps routes in memory.
-const Router = IS_DEMO ? MemoryRouter : BrowserRouter
+// Preview builds have no server routing: GitHub Pages uses #/ URLs (so new tab, back and reload work); the single-file artifact keeps routes in memory.
+const Router = !IS_DEMO ? BrowserRouter : import.meta.env.VITE_ROUTER === 'hash' ? HashRouter : MemoryRouter
 
 function ScrollTop() {
   const { pathname } = useLocation()
