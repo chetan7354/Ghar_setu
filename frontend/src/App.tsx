@@ -34,7 +34,7 @@ export default function App() {
         <div className="flex min-h-screen flex-col">
           {IS_DEMO && (
             <div className="bg-saffron-500 px-4 py-1.5 text-center text-xs font-semibold text-brand-900">
-              UI preview with sample listings. Not connected to the real backend; sign-up and posting are disabled here.
+              Preview with sample data, running in your browser. Changes reset on reload. Logins: buyer@demo.in, seller@demo.in, admin@demo.in (password demo1234).
             </div>
           )}
           <Header />

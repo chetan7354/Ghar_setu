@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
-import { ApiError } from '../api/client'
+import { ApiError, IS_DEMO } from '../api/client'
 import { Auth } from '../api/endpoints'
 import { useAuth } from '../auth/AuthContext'
 import { Logo } from '../components/Logo'
@@ -32,6 +32,17 @@ export function Login() {
 
   return (
     <AuthShell title="Welcome back" sub="Log in to contact owners and manage your listings.">
+      {IS_DEMO && (
+        <div className="mb-5 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
+          <p className="font-semibold">Preview logins (password demo1234)</p>
+          <div className="mt-2 flex flex-wrap gap-2">
+            {[['Buyer', 'buyer@demo.in'], ['Seller', 'seller@demo.in'], ['Admin', 'admin@demo.in']].map(([label, mail]) => (
+              <button key={mail} type="button" className="rounded-lg border border-amber-300 bg-white px-3 py-1 font-medium hover:bg-amber-100"
+                onClick={() => { setEmail(mail); setPassword('demo1234') }}>{label}</button>
+            ))}
+          </div>
+        </div>
+      )}
       <form onSubmit={submit} className="space-y-4">
         <Field label="Email"><input className="input" type="email" autoComplete="email" required value={email} onChange={e => setEmail(e.target.value)} /></Field>
         <Field label="Password"><input className="input" type="password" autoComplete="current-password" required value={password} onChange={e => setPassword(e.target.value)} /></Field>
