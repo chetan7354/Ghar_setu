@@ -37,6 +37,10 @@ Architecture, schema, API list, user journeys and security notes: [docs/ARCHITEC
 
 Test results: `mvn test` ran **27 tests, 0 failures** against a real MySQL 8.0.46 database. A Playwright browser test ran the full journey (seller registers → posts with photo → admin approves → buyer finds it in search → enquires → books visit → seller replies and accepts → buyer sees both) with no browser console errors.
 
+## Online preview (GitHub Pages)
+
+A sample-data preview of the frontend (no backend; data resets on reload) is built by `.github/workflows/preview-pages.yml` on every push to `main` and published at https://chetan7354.github.io/ghar_setu/ once Pages is switched on: repo **Settings → Pages → Source: GitHub Actions**. Logins: buyer@demo.in, seller@demo.in, admin@demo.in, password `demo1234`.
+
 ## Run it on Windows (PowerShell)
 
 Install first: **JDK 21**, **Maven 3.9+**, **Node.js 22**, **MySQL 8**.
