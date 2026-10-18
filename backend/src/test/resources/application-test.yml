@@ -1,0 +1,18 @@
+spring:
+  datasource:
+    url: ${TEST_DB_URL:jdbc:mysql://localhost:3306/gharsetu_test?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
+    username: ${TEST_DB_USERNAME:gharsetu}
+    password: ${TEST_DB_PASSWORD:devpass}
+  flyway:
+    clean-disabled: false
+app:
+  jwt:
+    secret: test-secret-for-automated-tests-only-0123456789
+  storage:
+    local-dir: ${java.io.tmpdir}/gharsetu-test-uploads
+  bootstrap-admin:
+    email: admin@test.local
+    password: AdminTestPass#1
+    phone: "9000000001"
+  rate-limit:
+    enabled: false

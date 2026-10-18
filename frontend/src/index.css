@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --color-brand-50: #eef7f8;
+  --color-brand-100: #d5eaee;
+  --color-brand-200: #a9d3db;
+  --color-brand-500: #1f7a8c;
+  --color-brand-700: #0f4c5c;
+  --color-brand-800: #0b3a47;
+  --color-brand-900: #082a33;
+  --color-saffron-100: #fbefd9;
+  --color-saffron-400: #eeb75c;
+  --color-saffron-500: #e8a33d;
+  --color-saffron-600: #c9842a;
+  --color-sand: #faf8f4;
+}
+
+body {
+  background: var(--color-sand);
+  color: #1e293b;
+}
+
+.input {
+  @apply w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-100;
+}
+.label {
+  @apply mb-1 block text-sm font-medium text-slate-700;
+}
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60;
+}
+.btn-primary {
+  @apply btn bg-brand-700 text-white hover:bg-brand-800;
+}
+.btn-accent {
+  @apply btn bg-saffron-500 text-brand-900 hover:bg-saffron-400;
+}
+.btn-ghost {
+  @apply btn border border-slate-300 bg-white text-slate-800 hover:bg-slate-50;
+}
+.card {
+  @apply rounded-2xl border border-slate-200 bg-white shadow-sm;
+}

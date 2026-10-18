@@ -1,0 +1,123 @@
+import { chromium } from 'playwright'
+// Full-journey browser test. Needs backend + 'npm run dev' running and: npm i -D playwright
+const B = process.env.BASE_URL ?? 'http://localhost:5173'
+const browser = await chromium.launch({  }).catch(() => chromium.launch())
+const shots = process.argv[2]
+const log = (...a) => console.log('✓', ...a)
+const errors = []
+async function ctx() {
+  const c = await browser.newContext({ viewport: { width: 1280, height: 900 } })
+  const p = await c.newPage()
+  p.on('pageerror', e => errors.push(e.message))
+  p.on('console', m => m.type() === 'error' && errors.push(m.text()))
+  return p
+}
+const stamp = Date.now() % 100000
+
+// Seller registers and posts a property
+const s = await ctx()
+await s.goto(B + '/register?type=SELLER')
+await s.getByLabel('Full name').fill('Suresh Kumar Tomar')
+await s.getByLabel('Email').fill(`seller${stamp}@example.com`)
+await s.getByLabel('Mobile number').fill('98' + String(stamp).padStart(8, '0'))
+await s.getByLabel('Password').fill('Password@123')
+await s.locator('input[type=checkbox]').check()
+await s.getByRole('button', { name: 'Create account' }).click()
+await s.waitForURL('**/sell')
+log('seller registered, landed on /sell')
+await s.getByRole('button', { name: 'Independent house' }).click()
+await s.getByLabel('Listing title').fill('3 BHK independent house near Thatipur chauraha')
+await s.getByLabel('Asking price (₹)').fill('6500000')
+await s.getByRole('button', { name: 'Continue' }).click()
+await s.getByLabel('Locality').selectOption({ label: 'Thatipur' })
+await s.getByLabel('Address / landmark').fill('Lane 4, near Thatipur chauraha')
+await s.getByRole('button', { name: 'Continue' }).click()
+await s.getByLabel('Built-up area').fill('1800')
+await s.getByLabel('Plot area (optional)').fill('1200')
+await s.getByLabel('Bedrooms').fill('3')
+await s.getByLabel('Bathrooms').fill('3')
+await s.getByLabel('Description').fill('Double storey house with covered parking, borewell and 24 hour water. Close to schools and the market.')
+await s.getByRole('button', { name: 'Car parking' }).click()
+await s.getByRole('button', { name: 'Save & continue' }).click()
+await s.getByText('Listing saved and sent for review').waitFor()
+await s.locator('input[type=file]').setInputFiles('house.png')
+await s.locator('img[src*="/uploads/properties/"]').first().waitFor()
+log('listing created, photo uploaded')
+if (shots) await s.screenshot({ path: shots + '/sell.png', fullPage: true })
+
+// Admin approves
+const a = await ctx()
+await a.goto(B + '/login')
+await a.getByLabel('Email').fill('admin@gharsetu.local')
+await a.getByLabel('Password').fill('AdminPass#2026')
+await a.getByRole('button', { name: 'Log in' }).click()
+await a.waitForURL('**/admin')
+await a.getByText('3 BHK independent house near Thatipur chauraha').waitFor()
+if (shots) await a.screenshot({ path: shots + '/admin.png', fullPage: true })
+await a.getByRole('button', { name: 'Approve' }).click()
+await a.getByText('Moderation queue is empty').waitFor()
+log('admin approved listing')
+
+// Buyer searches, enquires, books a visit
+const b = await ctx()
+await b.goto(B + '/')
+await b.getByText('3 BHK independent house near Thatipur chauraha').first().waitFor()
+if (shots) await b.screenshot({ path: shots + '/home.png', fullPage: true })
+log('listing visible on homepage (recently added)')
+await b.goto(B + '/search?locality=thatipur&minBedrooms=3')
+await b.getByText(/listings? found/).waitFor()
+await b.getByText('3 BHK independent house near Thatipur chauraha').first().click()
+await b.waitForURL('**/property/*')
+await b.getByText("The owner's number appears here after you send an enquiry.").waitFor()
+await b.getByRole('button', { name: 'Log in to contact owner' }).click()
+await b.waitForURL(/\/login\?next=/)
+await b.getByRole('link', { name: 'Create an account' }).click()
+await b.getByLabel('Full name').fill('Priya Sharma')
+await b.getByLabel('Email').fill(`buyer${stamp}@example.com`)
+await b.getByLabel('Mobile number').fill('97' + String(stamp).padStart(8, '0'))
+await b.getByLabel('Password').fill('Password@123')
+await b.locator('input[type=checkbox]').check()
+await b.getByRole('button', { name: 'Create account' }).click()
+await b.waitForURL('**/property/*')
+await b.getByRole('button', { name: 'Send enquiry' }).click()
+await b.getByText('Enquiry sent.').waitFor({ timeout: 5000 })
+await b.getByRole('link', { name: /Call \+91/ }).first().waitFor()
+log('buyer enquired; owner phone revealed')
+const when = new Date(Date.now() + 3 * 86400000); when.setHours(17, 0, 0, 0)
+const pad = n => String(n).padStart(2, '0')
+await b.locator('input[type=datetime-local]').fill(`${when.getFullYear()}-${pad(when.getMonth() + 1)}-${pad(when.getDate())}T17:00`)
+await b.getByRole('button', { name: 'Request visit' }).click()
+await b.getByText('Visit requested.').waitFor()
+if (shots) await b.screenshot({ path: shots + '/detail.png', fullPage: true })
+log('buyer requested site visit')
+
+// Seller sees enquiry, replies, accepts visit
+await s.goto(B + '/dashboard/seller?tab=enquiries')
+await s.getByText('Priya Sharma').first().waitFor()
+await s.getByPlaceholder('Write a reply').fill('Yes, it is available. Come on Sunday.')
+await s.getByRole('button', { name: 'Reply' }).click()
+await s.getByText('Your reply: Yes, it is available').waitFor()
+await s.goto(B + '/dashboard/seller?tab=visits')
+await s.getByRole('button', { name: 'Accept' }).click()
+await s.getByText('Confirmed').waitFor()
+if (shots) await s.screenshot({ path: shots + '/seller.png', fullPage: true })
+log('seller replied and accepted visit')
+
+// Buyer sees status
+await b.goto(B + '/dashboard?tab=visits')
+await b.getByText('Confirmed').waitFor()
+await b.goto(B + '/dashboard?tab=enquiries')
+await b.getByText('Yes, it is available. Come on Sunday.').waitFor()
+log('buyer sees confirmed visit and owner reply')
+
+// Mobile layout of search
+const m = await (await browser.newContext({ viewport: { width: 390, height: 844 } })).newPage()
+await m.goto(B + '/search')
+await m.getByRole('button', { name: 'Filters' }).click()
+await m.getByRole('button', { name: 'Show results' }).waitFor()
+const overflow = await m.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)
+log('mobile filter sheet opens; horizontal overflow =', overflow)
+if (shots) { await m.getByRole('button', { name: 'Show results' }).click(); await m.screenshot({ path: shots + '/mobile.png', fullPage: true }) }
+
+console.log('browser errors:', errors.length ? errors : 'none')
+await browser.close()

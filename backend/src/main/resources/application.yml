@@ -1,0 +1,52 @@
+spring:
+  application:
+    name: gharsetu-api
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/gharsetu?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
+    username: ${DB_USERNAME:gharsetu}
+    password: ${DB_PASSWORD:}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        jdbc.time_zone: UTC
+  flyway:
+    enabled: true
+  servlet:
+    multipart:
+      max-file-size: 8MB
+      max-request-size: 40MB
+  jackson:
+    default-property-inclusion: non_null
+    time-zone: UTC
+
+server:
+  port: ${PORT:8080}
+  error:
+    include-message: never
+    include-stacktrace: never
+
+management:
+  endpoints.web.exposure.include: health
+
+app:
+  brand-name: GharSetu
+  jwt:
+    secret: ${JWT_SECRET:}
+    expiry-minutes: ${JWT_EXPIRY_MINUTES:1440}
+  cors:
+    allowed-origins: ${CORS_ORIGINS:http://localhost:5173}
+  storage:
+    provider: ${STORAGE_PROVIDER:local}
+    local-dir: ${UPLOAD_DIR:./uploads}
+    public-base-url: ${PUBLIC_BASE_URL:http://localhost:8080}
+  bootstrap-admin:
+    email: ${ADMIN_EMAIL:}
+    password: ${ADMIN_PASSWORD:}
+    phone: ${ADMIN_PHONE:9000000000}
+
+logging:
+  pattern:
+    console: "%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX} %-5level [%X{requestId:-}] %logger{36} - %msg%n"
